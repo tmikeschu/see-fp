@@ -1,0 +1,13 @@
+.SeeFP {
+  height: 100%;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.SeeFP__selectedList {
+  font-size: var(--fsize--lg);
+}

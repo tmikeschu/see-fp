@@ -34,21 +34,41 @@ names =
     [ "Harry", "Hermione", "Ron" ]
 
 
+cats : List String
+cats =
+    [ "😺"
+    , "😸"
+    , "😹"
+    , "😻"
+    ]
+
+
+people : List String
+people =
+    [ "😀"
+    , "😄"
+    , "😂"
+    , "😍"
+    ]
+
+
 type ListType
     = Nums
     | Names
+    | Cats
 
 
 type alias Model =
     { listType : Maybe ListType
     , nums : List Int
     , names : List String
+    , cats : List String
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Nothing nums names, Cmd.none )
+    ( Model Nothing nums names cats, Cmd.none )
 
 
 
@@ -75,6 +95,9 @@ listTypeFromString list =
         "Names" ->
             Just Names
 
+        "Cats" ->
+            Just Cats
+
         _ ->
             Nothing
 
@@ -87,7 +110,7 @@ view : Model -> Html Msg
 view model =
     div [ class "SeeFP" ]
         [ h1 [ class "SeeFP__Header" ] [ text "SEE FP" ]
-        , div [ class "SeeFP__SelectedList" ]
+        , div [ class "SeeFP__selectedList" ]
             [ text <| showList model ]
         , select [ onInput ChooseList ]
             [ option
@@ -95,6 +118,7 @@ view model =
                 [ text "Pick a list" ]
             , makeOption "Nums" "Nums"
             , makeOption "Names" "Names"
+            , makeOption "Cats" "Cats"
             ]
         ]
 
@@ -110,13 +134,13 @@ showList : Model -> String
 showList model =
     case model.listType of
         Just Nums ->
-            model.nums
-                |> List.map String.fromInt
-                |> String.join " "
+            model.nums |> List.map String.fromInt |> String.join " "
 
         Just Names ->
-            model.names
-                |> String.join " "
+            model.names |> String.join " "
+
+        Just Cats ->
+            model.cats |> String.join " "
 
         Nothing ->
             "Select a list"
