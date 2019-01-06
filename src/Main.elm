@@ -86,7 +86,7 @@ listTypeFromString list =
 view : Model -> Html Msg
 view model =
     div [ class "SeeFP" ]
-        [ h1 [ class "SeeFP__Header" ] [ text "See FP" ]
+        [ h1 [ class "SeeFP__Header" ] [ text "SEE FP" ]
         , div [ class "SeeFP__SelectedList" ]
             [ text <| showList model ]
         , select [ onInput ChooseList ]

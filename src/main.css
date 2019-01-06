@@ -1,4 +1,5 @@
 @import "styles/reset.css";
+@import "styles/theme.css";
 
 /*
   elm-hot creates an additional div wrapper around the app to make HMR possible.
@@ -9,18 +10,51 @@
 */
 
 [data-elm-hot="true"] {
-  height: inherit;
+}
+
+html,
+body {
+  height: 100vh;
+  width: 100vw;
 }
 
 body {
-  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
-  margin: 0;
-  text-align: center;
-  color: #293c4b;
+  background-color: var(--color--light);
+  color: var(--color--font);
+  font-family: var(--font);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: var(--fsize);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font--title);
+  color: var(--color--title);
 }
 
 h1 {
-  font-size: 30px;
+  font-size: var(--fsize--xl);
+}
+
+h2 {
+  font-size: var(--fsize--lg);
+}
+
+h3 {
+  font-size: var(--fsize--md);
+  text-transform: uppercase;
+}
+
+h4 {
+  color: var(--color--secondary);
+  font-size: var(--fsize--md);
+  text-transform: uppercase;
 }
 
 img {

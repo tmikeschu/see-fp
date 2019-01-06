@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css?family=Major+Mono+Display|Source+Code+Pro');
+
+:root {
+  --font: 'Source Code Pro', 'Helvetica Neue', monospace, sans-serif;
+  --font--primary: var(--font);
+  --font--title: 'Major Mono Display', var(--font);
+
+  --color--dark: #33312E;
+  --color--light: #EFF6EE;
+  --color--orange: #EE6C4D;
+  --color--peach: #F38D68;
+  --color--purple: #662C91;
+  --color--teal: #17A398;
+  --color: var(--color--purple);
+  --color--primary: var(--color);
+  --color--secondary: var(--color--peach);
+  --color--font: var(--color--dark);
+  --color--title: var(--color--primary);
+
+  --fsize: 16px;
+  --fsize--xs: 8px;
+  --fsize--sm: 12px;
+  --fsize--md: var(--fsize);
+  --fsize--lg: 32px;
+  --fsize--xl: 48px;
+
+  --space: 16px;
+  --space--xs: 4px;
+  --space--sm: 8px;
+  --space--md: var(--space);
+  --space--lg: 32px;
+  --space--xl: 64px;
+}
