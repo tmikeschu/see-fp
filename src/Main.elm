@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Main exposing (getCurrentElement, init, main, update)
 
 import Browser
 import Html exposing (Attribute, Html, button, div, h1, h3, option, select, text)
