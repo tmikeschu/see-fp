@@ -1,4 +1,4 @@
-![]() badges
+[![Build Status](https://travis-ci.com/tmikeschu/see-fp.svg?branch=master)](https://travis-ci.com/tmikeschu/see-fp)
 
 # See FP
 
