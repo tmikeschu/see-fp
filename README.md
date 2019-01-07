@@ -32,12 +32,16 @@ The app is written in Elm and visualizes the operations using JavaScript syntax.
 
 To get your machine and this code friendly and acquainted:
 
+1. [Install Elm](https://guide.elm-lang.org/install.html).
+
 Clone this repository using your preferred method and `cd` into it. If you're not sure, I
 recommend the SSH route:
 
 ```
 git clone git@github.com:tmikeschu/see-fp.git
+npm i -g create-elm-app
 cd see-fp
+elm-app start
 ```
 
 ## Testing
