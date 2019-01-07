@@ -1,10 +1,22 @@
 module Main exposing (getCurrentElement, init, main, update)
 
 import Browser
-import Html exposing (Attribute, Html, button, div, h1, h3, option, select, text)
+import Html exposing (Attribute, Html, button, div, h1, option, select, text)
 import Html.Attributes exposing (..)
-import Html.Events exposing (keyCode, on, onClick, onInput)
+import Html.Events
+    exposing
+        ( keyCode
+        , on
+        , onClick
+        , onInput
+        )
 import Json.Decode as Json
+import ListType
+    exposing
+        ( ListType(..)
+        , listTypeFromString
+        , operationsFor
+        )
 
 
 
@@ -25,34 +37,6 @@ main =
 ---- MODEL ----
 
 
-nums : List Int
-nums =
-    [ 4, 8, 15, 16, 23, 42 ]
-
-
-names : List String
-names =
-    [ "Harry", "Hermione", "Ron" ]
-
-
-cats : List String
-cats =
-    [ "😺"
-    , "😸"
-    , "😹"
-    , "😻"
-    ]
-
-
-people : List String
-people =
-    [ "😀"
-    , "😄"
-    , "😂"
-    , "😍"
-    ]
-
-
 type HOF
     = Map
     | Filter
@@ -70,12 +54,6 @@ operationSignature o =
             "x => x + 1"
 
 
-type ListType
-    = Nums
-    | Names
-    | Cats
-
-
 type alias Model =
     { listType : Maybe ListType
     , nums : List Int
@@ -91,10 +69,10 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     ( { listType = Nothing
-      , nums = nums
+      , nums = ListType.nums
       , mappedNums = []
-      , names = names
-      , cats = cats
+      , names = ListType.names
+      , cats = ListType.cats
       , index = 0
       , hof = Nothing
       , operation = Nothing
@@ -177,22 +155,6 @@ transformed x model =
             0
 
 
-listTypeFromString : String -> Maybe ListType
-listTypeFromString list =
-    case list of
-        "Nums" ->
-            Just Nums
-
-        "Names" ->
-            Just Names
-
-        "Cats" ->
-            Just Cats
-
-        _ ->
-            Nothing
-
-
 operationFromString : String -> Maybe Operation
 operationFromString operation =
     case operation of
@@ -201,27 +163,6 @@ operationFromString operation =
 
         _ ->
             Nothing
-
-
-startOfList : Model -> Bool
-startOfList model =
-    model.index == 0
-
-
-endOfList : Model -> Bool
-endOfList model =
-    case model.listType of
-        Just Nums ->
-            model.index >= List.length model.nums
-
-        Just Names ->
-            model.index >= List.length model.names
-
-        Just Cats ->
-            model.index >= List.length model.cats
-
-        Nothing ->
-            True
 
 
 handleKeydown x =
@@ -243,16 +184,6 @@ operationString o =
             "Increment"
 
 
-operationsFor : Maybe ListType -> List String
-operationsFor lt =
-    case lt of
-        Just Nums ->
-            [ "increment" ]
-
-        _ ->
-            []
-
-
 
 ---- VIEW ----
 
@@ -261,11 +192,6 @@ view : Model -> Html Msg
 view model =
     div [ class "SeeFP", onKeydown handleKeydown ]
         [ h1 [ class "SeeFP__header" ] [ text "See FP" ]
-        , h3 [ class "SeeFP__index" ]
-            [ model.index
-                |> String.fromInt
-                |> text
-            ]
         , div [ class "SeeFP__stage" ]
             [ div [ class "SeeFP__operation" ]
                 [ text
@@ -348,7 +274,8 @@ view model =
                 [ text "Pick an operation" ]
              ]
                 ++ (model.listType
-                        |> operationsFor
+                        |> Maybe.map operationsFor
+                        |> Maybe.withDefault []
                         |> List.map (\x -> makeOption x x)
                    )
             )
