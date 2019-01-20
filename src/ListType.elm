@@ -1,12 +1,14 @@
 module ListType exposing
     ( ListType(..)
     , cats
-    , listTypeFromString
+    , fromString
     , names
     , nums
     , operationsFor
     , people
     )
+
+import SeeFpType exposing (SeeFpType(..))
 
 
 type ListType
@@ -15,36 +17,40 @@ type ListType
     | Cats
 
 
-nums : List Int
+nums : List SeeFpType
 nums =
     [ 4, 8, 15, 16, 23, 42 ]
+        |> List.map IntVal
 
 
-names : List String
+names : List SeeFpType
 names =
     [ "Harry", "Hermione", "Ron" ]
+        |> List.map StrVal
 
 
-cats : List String
+cats : List SeeFpType
 cats =
     [ "😺"
     , "😸"
     , "😹"
     , "😻"
     ]
+        |> List.map StrVal
 
 
-people : List String
+people : List SeeFpType
 people =
     [ "😀"
     , "😄"
     , "😂"
     , "😍"
     ]
+        |> List.map StrVal
 
 
-listTypeFromString : String -> Maybe ListType
-listTypeFromString list =
+fromString : String -> Maybe ListType
+fromString list =
     case list of
         "Nums" ->
             Just Nums
@@ -63,7 +69,12 @@ operationsFor : ListType -> List String
 operationsFor lt =
     case lt of
         Nums ->
-            [ "increment" ]
+            [ "increment"
+            , "inverse"
+            , "isEven"
+            , "square"
+            , "toWord"
+            ]
 
         Names ->
             []

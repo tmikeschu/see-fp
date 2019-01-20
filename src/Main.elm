@@ -1,6 +1,7 @@
 module Main exposing (getCurrentElement, init, main, update)
 
 import Browser
+import HOF exposing (..)
 import Html exposing (Attribute, Html, button, div, h1, option, select, text)
 import Html.Attributes exposing (..)
 import Html.Events
@@ -14,9 +15,10 @@ import Json.Decode as Json
 import ListType
     exposing
         ( ListType(..)
-        , listTypeFromString
         , operationsFor
         )
+import Operation exposing (Operation)
+import SeeFpType exposing (SeeFpType(..))
 
 
 
@@ -37,29 +39,11 @@ main =
 ---- MODEL ----
 
 
-type HOF
-    = Map
-    | Filter
-    | Reduce
-
-
-type Operation
-    = Increment
-
-
-operationSignature : Operation -> String
-operationSignature o =
-    case o of
-        Increment ->
-            "x => x + 1"
-
-
 type alias Model =
     { listType : Maybe ListType
-    , nums : List Int
-    , mappedNums : List Int
-    , names : List String
-    , cats : List String
+    , nums : List SeeFpType
+    , names : List SeeFpType
+    , cats : List SeeFpType
     , index : Int
     , hof : Maybe HOF
     , operation : Maybe Operation
@@ -70,7 +54,6 @@ init : ( Model, Cmd Msg )
 init =
     ( { listType = Nothing
       , nums = ListType.nums
-      , mappedNums = []
       , names = ListType.names
       , cats = ListType.cats
       , index = 0
@@ -85,12 +68,91 @@ init =
 ---- UPDATE ----
 
 
+type alias Update =
+    Model -> Model
+
+
 type Msg
     = ChooseList String
     | ChooseOperation String
     | StepLeft
     | StepRight
     | Noop
+
+
+decIndex : Update
+decIndex m =
+    { m | index = m.index - 1 }
+
+
+incIndex : Update
+incIndex m =
+    { m | index = m.index + 1 }
+
+
+popModel : Update
+popModel m =
+    case m.operation of
+        Nothing ->
+            m
+
+        Just op ->
+            { m | operation = Just <| Operation.pop op }
+
+
+stepLeft : Model -> Model
+stepLeft m =
+    case m.operation of
+        Nothing ->
+            m
+
+        Just op ->
+            m |> decIndex |> popModel
+
+
+pushModel : Update
+pushModel m =
+    case elementAt m.index m.nums of
+        Just x ->
+            case m.operation of
+                Nothing ->
+                    m
+
+                Just op ->
+                    { m | operation = Just <| Operation.push x op }
+
+        _ ->
+            m
+
+
+stepRight : Update
+stepRight m =
+    case m.operation of
+        Nothing ->
+            m
+
+        Just op ->
+            m |> pushModel |> incIndex
+
+
+resetIndex : Update
+resetIndex m =
+    { m | index = 0 }
+
+
+resetOperation : Update
+resetOperation m =
+    { m | operation = Nothing }
+
+
+setList : String -> Update
+setList listType m =
+    { m | listType = ListType.fromString listType }
+
+
+setOperation : String -> Update
+setOperation op m =
+    { m | operation = Operation.fromString op }
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -100,69 +162,33 @@ update msg model =
             ( model, Cmd.none )
 
         ChooseList l ->
-            ( { model | listType = listTypeFromString l }, Cmd.none )
+            ( model |> resetIndex |> resetOperation |> setList l
+            , Cmd.none
+            )
 
         ChooseOperation o ->
-            ( { model | operation = operationFromString o }, Cmd.none )
+            ( model |> setOperation o |> resetIndex
+            , Cmd.none
+            )
 
         StepLeft ->
             if model.index - 1 < 0 || model.operation == Nothing then
                 ( model, Cmd.none )
 
             else
-                ( { model
-                    | index = model.index - 1
-                    , mappedNums =
-                        model.mappedNums
-                            |> List.reverse
-                            |> List.tail
-                            |> Maybe.withDefault []
-                            |> List.reverse
-                  }
-                , Cmd.none
-                )
+                ( stepLeft model, Cmd.none )
 
         StepRight ->
             if model.index + 1 > List.length model.nums || model.operation == Nothing then
                 ( model, Cmd.none )
 
             else
-                ( { model
-                    | index = model.index + 1
-                    , mappedNums =
-                        case model.nums |> List.drop model.index |> List.head of
-                            Just x ->
-                                model.mappedNums ++ [ transformed x model ]
-
-                            Nothing ->
-                                model.mappedNums
-                  }
-                , Cmd.none
-                )
+                ( stepRight model, Cmd.none )
 
 
-transformed : a -> Model -> Int
-transformed x model =
-    case model.operation of
-        Just Increment ->
-            model.nums
-                |> List.drop model.index
-                |> List.head
-                |> Maybe.withDefault 0
-                |> (+) 1
-
-        _ ->
-            0
-
-
-operationFromString : String -> Maybe Operation
-operationFromString operation =
-    case operation of
-        "increment" ->
-            Just Increment
-
-        _ ->
-            Nothing
+elementAt : Int -> List a -> Maybe a
+elementAt index =
+    List.drop index >> List.head
 
 
 handleKeydown x =
@@ -177,13 +203,6 @@ handleKeydown x =
             Noop
 
 
-operationString : Operation -> String
-operationString o =
-    case o of
-        Increment ->
-            "Increment"
-
-
 
 ---- VIEW ----
 
@@ -191,29 +210,29 @@ operationString o =
 view : Model -> Html Msg
 view model =
     div [ class "SeeFP", onKeydown handleKeydown ]
-        [ h1 [ class "SeeFP__header" ] [ text "See FP" ]
-        , div [ class "SeeFP__stage" ]
-            [ div [ class "SeeFP__operation" ]
+        [ h1 [ class (bem "header") ] [ text "See FP" ]
+        , div [ class (bem "stage") ]
+            [ div [ class (bem "operation") ]
                 [ text
                     (case model.operation of
-                        Just o ->
-                            operationString o
-
                         Nothing ->
                             "n/a"
+
+                        Just o ->
+                            o.name
                     )
                 ]
-            , div [ class "SeeFP__signature" ]
+            , div [ class (bem "signature") ]
                 [ text
                     (case model.operation of
-                        Just o ->
-                            operationSignature o
-
                         Nothing ->
                             "n/a"
+
+                        Just o ->
+                            o.signature
                     )
                 ]
-            , div [ class "SeeFP__selectedList" ]
+            , div [ class (bem "selectedList") ]
                 (model
                     |> showList
                     |> List.indexedMap Tuple.pair
@@ -237,7 +256,7 @@ view model =
                                 [ text x ]
                         )
                 )
-            , div [ class "SeeFP__transformedList" ]
+            , div [ class (bem "transformedList") ]
                 (model
                     |> showTranformedList
                     |> List.map
@@ -257,7 +276,7 @@ view model =
                                 [ text x ]
                         )
                 )
-            , div [ class "SeeFP__currentElement" ]
+            , div [ class (bem "currentElement") ]
                 [ text <| getCurrentElement model ]
             ]
         , select [ onInput ChooseList ]
@@ -280,8 +299,8 @@ view model =
                    )
             )
         , div [ class <| bem <| "steps" ]
-            [ button [ class "SeeFP__stepLeft", onClick StepLeft ] [ text "⏪" ]
-            , button [ class "SeeFP__stepRight", onClick StepRight ] [ text "⏩" ]
+            [ button [ class (bem "stepLeft"), onClick StepLeft ] [ text "⏪" ]
+            , button [ class (bem "stepRight"), onClick StepRight ] [ text "⏩" ]
             ]
         ]
 
@@ -302,13 +321,13 @@ showList : Model -> List String
 showList model =
     case model.listType of
         Just Nums ->
-            model.nums |> List.map String.fromInt
+            model.nums |> List.map SeeFpType.toString
 
         Just Names ->
-            model.names
+            model.names |> List.map SeeFpType.toString
 
         Just Cats ->
-            model.cats
+            model.cats |> List.map SeeFpType.toString
 
         Nothing ->
             [ "n/a" ]
@@ -316,23 +335,13 @@ showList model =
 
 showTranformedList : Model -> List String
 showTranformedList model =
-    case model.listType of
-        Just Nums ->
-            case model.mappedNums of
-                [] ->
-                    [ "_" ]
-
-                xs ->
-                    xs |> List.map String.fromInt
-
-        Just Names ->
-            model.names
-
-        Just Cats ->
-            model.cats
+    case model.operation of
+        Just o ->
+            o.repository
+                |> List.map SeeFpType.toString
 
         Nothing ->
-            [ "n/a" ]
+            [ "_" ]
 
 
 getCurrentElement : Model -> String
@@ -342,8 +351,7 @@ getCurrentElement model =
             model.nums
                 |> List.drop model.index
                 |> List.head
-                |> Maybe.map
-                    String.fromInt
+                |> Maybe.map SeeFpType.toString
                 |> Maybe.withDefault "n/a"
 
         _ ->

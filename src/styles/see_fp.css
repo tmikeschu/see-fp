@@ -22,7 +22,6 @@
 .SeeFP__currentElement,
 .SeeFP__signature,
 .SeeFP__transformedList {
-  font-size: 5vw;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
