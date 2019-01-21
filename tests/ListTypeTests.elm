@@ -12,5 +12,11 @@ all =
             \_ ->
                 ListType.Nums
                     |> ListType.operationsFor
-                    |> Expect.equal [ "increment" ]
+                    |> Expect.equal
+                        [ "increment"
+                        , "inverse"
+                        , "isEven"
+                        , "square"
+                        , "toWord"
+                        ]
         ]
