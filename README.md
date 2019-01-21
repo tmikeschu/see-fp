@@ -18,15 +18,15 @@ to transform lists.
 
 ### TODO:
 
-* [ ] `map`
-* [ ] `filter`
-* [ ] `reduce`
+- [ ] `map`
+- [ ] `filter`
+- [ ] `reduce`
 
 The app is written in Elm and visualizes the operations using JavaScript syntax.
 
 ## Resources
 
-* [A FUNctional JavaScript Makeover](https://medium.com/@tmikeschu/a-functional-javascript-makeover-e1fd017e5413)
+- [A FUNctional JavaScript Makeover](https://medium.com/@tmikeschu/a-functional-javascript-makeover-e1fd017e5413)
 
 ## Setup
 
@@ -39,7 +39,7 @@ recommend the SSH route:
 
 ```
 git clone git@github.com:tmikeschu/see-fp.git
-npm i -g create-elm-app
+npm i -g create-elm-app gh-pages
 cd see-fp
 elm-app start
 ```
@@ -52,14 +52,29 @@ First things first: get a dopamine hit from a verdant test suite! Run the tests 
 elm-test
 ```
 
-Then *read* the tests to get oriented with the application.
+Then _read_ the tests to get oriented with the application.
 
 ## Local Development
 
 What fun is setting up and running tests if you can't do some of your own stuff?
 
-TODO
+Local server:
+
 ```
+elm-app start
+```
+
+Create production build:
+
+```
+elm-app build
+```
+
+Deploy to github pages:
+
+```
+elm-app build
+gh-pages -d build
 ```
 
 ## Stack
@@ -72,11 +87,11 @@ DevOps:
 
 Tools:
 
-* [Create Elm App](https://github.com/halfzebra/create-elm-app)
-* [Atomic Design](http://bradfrost.com/blog/post/atomic-web-design/)
-* [Atomic BEM](https://css-tricks.com/abem-useful-adaptation-bem/)
+- [Create Elm App](https://github.com/halfzebra/create-elm-app)
+- [Atomic Design](http://bradfrost.com/blog/post/atomic-web-design/)
+- [Atomic BEM](https://css-tricks.com/abem-useful-adaptation-bem/)
 
-CI:
+CI: [Travis](https://travis-ci.com)
 
 ## Style
 
