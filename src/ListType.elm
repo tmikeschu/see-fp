@@ -65,19 +65,47 @@ fromString list =
             Nothing
 
 
-operationsFor : ListType -> List String
+operationsFor :
+    ListType
+    ->
+        { map : List String
+        , filter : List String
+        , reduce : List String
+        }
 operationsFor lt =
     case lt of
         Nums ->
-            [ "increment"
-            , "inverse"
-            , "isEven"
-            , "square"
-            , "toWord"
-            ]
+            { map =
+                [ "increment"
+                , "inverse"
+                , "isEven"
+                , "square"
+                , "toWord"
+                ]
+            , filter =
+                [ "isEven"
+                , "isOdd"
+                , "isPerfectSquare"
+                ]
+            , reduce = []
+            }
 
         Names ->
-            []
+            { map = []
+            , filter =
+                [ "startsWithH"
+                , "shorterThan4"
+                , "containsR"
+                ]
+            , reduce = []
+            }
 
         Cats ->
-            []
+            { map = []
+            , filter =
+                [ "isInLove"
+                , "isLaughing"
+                , "isHappy"
+                ]
+            , reduce = []
+            }
