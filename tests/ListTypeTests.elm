@@ -50,7 +50,11 @@ all =
                 ListType.Cats
                     |> ListType.operationsFor
                     |> Expect.equal
-                        { map = []
+                        { map =
+                            [ "toSmiley"
+                            , "pourWater"
+                            , "scare"
+                            ]
                         , filter =
                             [ "isInLove"
                             , "isLaughing"

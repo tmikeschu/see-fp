@@ -106,7 +106,11 @@ operationsFor lt =
             }
 
         Cats ->
-            { map = []
+            { map =
+                [ "toSmiley"
+                , "pourWater"
+                , "scare"
+                ]
             , filter =
                 [ "isInLove"
                 , "isLaughing"

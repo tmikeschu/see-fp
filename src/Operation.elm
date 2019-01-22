@@ -49,6 +49,9 @@ operations =
     , ( "upcase", "s => s.toUpperCase()", upcase )
     , ( "firstLetter", "s => s[0]", firstLetter )
     , ( "length", "s => s.length", length )
+    , ( "toSmiley", "cat => toSmiley(cat)", toSmiley )
+    , ( "pourWater", "cat => pourWater(cat)", pourWater )
+    , ( "scare", "cat => scare(cat)", scare )
     ]
 
 

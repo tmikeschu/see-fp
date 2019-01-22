@@ -8,6 +8,14 @@ import Test exposing (..)
 
 all : Test
 all =
+    let
+        cats =
+            [ "😺"
+            , "😸"
+            , "😹"
+            , "😻"
+            ]
+    in
     describe "Functions"
         [ test ".downcase downcases a StrVal value" <|
             \_ ->
@@ -33,4 +41,33 @@ all =
                     |> StrVal
                     |> Functions.length
                     |> Expect.equal (IntVal 2)
+        , test ".toSmiley maps a cat to a smiley" <|
+            \_ ->
+                cats
+                    |> List.map (StrVal >> Functions.toSmiley)
+                    |> Expect.equal
+                        ([ "😀", "😄", "😂", "😍" ]
+                            |> List.map
+                                StrVal
+                        )
+        , test ".pourWater maps a cat to a mad cat" <|
+            \_ ->
+                cats
+                    |> List.map (StrVal >> Functions.pourWater)
+                    |> Expect.equal
+                        ("😾"
+                            |> List.repeat 4
+                            |> List.map
+                                StrVal
+                        )
+        , test ".scare maps a cat to a scared cat" <|
+            \_ ->
+                cats
+                    |> List.map (StrVal >> Functions.scare)
+                    |> Expect.equal
+                        ("🙀"
+                            |> List.repeat 4
+                            |> List.map
+                                StrVal
+                        )
         ]

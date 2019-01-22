@@ -11,9 +11,12 @@ module Functions exposing
     , isOdd
     , isPerfectSquare
     , length
+    , pourWater
+    , scare
     , shorterThan4
     , square
     , startsWithH
+    , toSmiley
     , toWord
     , upcase
     )
@@ -152,6 +155,16 @@ length seefp =
             IntVal 0
 
 
+pourWater : Transformation
+pourWater =
+    always (StrVal "😾")
+
+
+scare : Transformation
+scare =
+    always (StrVal "🙀")
+
+
 shorterThan4 : Transformation
 shorterThan4 seefp =
     case seefp of
@@ -187,6 +200,25 @@ startsWithH seefp =
 
         _ ->
             BoolVal False
+
+
+toSmiley : Transformation
+toSmiley seefp =
+    case seefp of
+        StrVal "😺" ->
+            StrVal "😀"
+
+        StrVal "😸" ->
+            StrVal "😄"
+
+        StrVal "😹" ->
+            StrVal "😂"
+
+        StrVal "😻" ->
+            StrVal "😍"
+
+        _ ->
+            StrVal "🐛"
 
 
 toWord : Transformation
