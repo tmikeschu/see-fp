@@ -1,11 +1,11 @@
-language: elm
-elm:
-  - "0.19.0"
-deploy:
-    provider: pages
-    skip-cleanup: true
-    github-token: $GITHUB_TOKEN
-    keep-history: true
-    local-dir: ./build
-    on:
-        branch: master
+language: node_js
+
+sudo: required
+
+node_js:
+  - '7'
+
+install:
+  - npm i create-elm-app -g
+
+script: elm-app test
