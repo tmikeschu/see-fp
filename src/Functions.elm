@@ -1,5 +1,7 @@
 module Functions exposing
     ( containsR
+    , downcase
+    , firstLetter
     , increment
     , inverse
     , isEven
@@ -8,10 +10,12 @@ module Functions exposing
     , isLaughing
     , isOdd
     , isPerfectSquare
+    , length
     , shorterThan4
     , square
     , startsWithH
     , toWord
+    , upcase
     )
 
 import SeeFpType exposing (SeeFpType(..))
@@ -32,6 +36,26 @@ containsR seefp =
 
         _ ->
             BoolVal False
+
+
+downcase : Transformation
+downcase seefp =
+    case seefp of
+        StrVal s ->
+            s |> String.toLower |> StrVal
+
+        _ ->
+            StrVal "not a string"
+
+
+firstLetter : Transformation
+firstLetter seefp =
+    case seefp of
+        StrVal s ->
+            s |> String.slice 0 1 |> StrVal
+
+        _ ->
+            StrVal "not a string"
 
 
 increment : Transformation
@@ -118,6 +142,16 @@ isPerfectSquare seefp =
             BoolVal False
 
 
+length : Transformation
+length seefp =
+    case seefp of
+        StrVal s ->
+            s |> String.length |> IntVal
+
+        _ ->
+            IntVal 0
+
+
 shorterThan4 : Transformation
 shorterThan4 seefp =
     case seefp of
@@ -178,3 +212,13 @@ toWord seefp =
 
         _ ->
             StrVal "error"
+
+
+upcase : Transformation
+upcase seefp =
+    case seefp of
+        StrVal s ->
+            s |> String.toUpper |> StrVal
+
+        _ ->
+            StrVal ""

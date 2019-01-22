@@ -32,7 +32,12 @@ all =
                 ListType.Names
                     |> ListType.operationsFor
                     |> Expect.equal
-                        { map = []
+                        { map =
+                            [ "downcase"
+                            , "upcase"
+                            , "firstLetter"
+                            , "length"
+                            ]
                         , filter =
                             [ "startsWithH"
                             , "shorterThan4"

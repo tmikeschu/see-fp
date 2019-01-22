@@ -91,7 +91,12 @@ operationsFor lt =
             }
 
         Names ->
-            { map = []
+            { map =
+                [ "downcase"
+                , "upcase"
+                , "firstLetter"
+                , "length"
+                ]
             , filter =
                 [ "startsWithH"
                 , "shorterThan4"
