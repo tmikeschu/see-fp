@@ -75,6 +75,7 @@ type alias Update =
 type Msg
     = ChooseList String
     | ChooseOperation String
+    | ChooseHOF String
     | StepLeft
     | StepRight
     | Noop
@@ -110,16 +111,41 @@ stepLeft m =
             m |> decIndex |> popModel
 
 
+getList : Model -> List SeeFpType
+getList m =
+    case m.listType of
+        Just Nums ->
+            m.nums
+
+        Just Names ->
+            m.names
+
+        Just Cats ->
+            m.cats
+
+        _ ->
+            []
+
+
 pushModel : Update
 pushModel m =
-    case elementAt m.index m.nums of
+    case elementAt m.index (getList m) of
         Just x ->
-            case m.operation of
-                Nothing ->
+            case ( m.operation, m.hof ) of
+                ( Nothing, _ ) ->
                     m
 
-                Just op ->
+                ( _, Nothing ) ->
+                    m
+
+                ( Just op, Just Map ) ->
                     { m | operation = Just <| Operation.push x op }
+
+                ( Just op, Just Filter ) ->
+                    { m | operation = Just <| Operation.filter x op }
+
+                _ ->
+                    m
 
         _ ->
             m
@@ -150,6 +176,11 @@ setList listType m =
     { m | listType = ListType.fromString listType }
 
 
+setHOF : String -> Update
+setHOF hof m =
+    { m | hof = HOF.fromString hof }
+
+
 setOperation : String -> Update
 setOperation op m =
     { m | operation = Operation.fromString op }
@@ -163,6 +194,11 @@ update msg model =
 
         ChooseList l ->
             ( model |> resetIndex |> resetOperation |> setList l
+            , Cmd.none
+            )
+
+        ChooseHOF h ->
+            ( model |> resetIndex |> resetOperation |> setHOF h
             , Cmd.none
             )
 
@@ -287,6 +323,14 @@ view model =
             , makeOption "Names" "Names"
             , makeOption "Cats" "Cats"
             ]
+        , select [ onInput ChooseHOF ]
+            [ option
+                [ disabled True, selected True ]
+                [ text "Pick a higher order function" ]
+            , makeOption "Map" "map"
+            , makeOption "Filter" "filter"
+            , makeOption "Reduce" "reduce"
+            ]
         , select [ onInput ChooseOperation ]
             ([ option
                 [ disabled True, selected True ]
@@ -294,6 +338,7 @@ view model =
              ]
                 ++ (model.listType
                         |> Maybe.map operationsFor
+                        |> Maybe.andThen (hofOperations model.hof)
                         |> Maybe.withDefault []
                         |> List.map (\x -> makeOption x x)
                    )
@@ -303,6 +348,30 @@ view model =
             , button [ class (bem "stepRight"), onClick StepRight ] [ text "⏩" ]
             ]
         ]
+
+
+hofOperations :
+    Maybe HOF
+    ->
+        { map : List String
+        , filter : List String
+        , reduce :
+            List String
+        }
+    -> Maybe (List String)
+hofOperations hof ops =
+    case hof of
+        Just Map ->
+            Just ops.map
+
+        Just Filter ->
+            Just ops.filter
+
+        Just Reduce ->
+            Just ops.reduce
+
+        _ ->
+            Nothing
 
 
 bem : String -> String
