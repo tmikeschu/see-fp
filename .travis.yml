@@ -8,4 +8,15 @@ node_js:
 install:
   - npm i create-elm-app -g
 
-script: elm-app test
+script: 
+    - elm-app test
+    - elm-app build
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  local-dir: ./build
+  on:
+    branch: master
