@@ -323,7 +323,7 @@ view model =
             , makeOption "Names" "Names"
             , makeOption "Cats" "Cats"
             ]
-        , select [ onInput ChooseHOF ]
+        , select [ onInput ChooseHOF, disabled (model.listType == Nothing) ]
             [ option
                 [ disabled True, selected True ]
                 [ text "Pick a higher order function" ]
@@ -331,23 +331,32 @@ view model =
             , makeOption "Filter" "filter"
             , makeOption "Reduce" "reduce"
             ]
-        , select [ onInput ChooseOperation ]
+        , select
+            [ onInput ChooseOperation
+            , disabled
+                (List.isEmpty <|
+                    operationOptions model
+                )
+            ]
             ([ option
                 [ disabled True, selected True ]
                 [ text "Pick an operation" ]
              ]
-                ++ (model.listType
-                        |> Maybe.map operationsFor
-                        |> Maybe.andThen (hofOperations model.hof)
-                        |> Maybe.withDefault []
-                        |> List.map (\x -> makeOption x x)
-                   )
+                ++ (model |> operationOptions |> List.map (\x -> makeOption x x))
             )
         , div [ class <| bem <| "steps" ]
             [ button [ class (bem "stepLeft"), onClick StepLeft ] [ text "⏪" ]
             , button [ class (bem "stepRight"), onClick StepRight ] [ text "⏩" ]
             ]
         ]
+
+
+operationOptions : Model -> List String
+operationOptions m =
+    m.listType
+        |> Maybe.map operationsFor
+        |> Maybe.andThen (hofOperations m.hof)
+        |> Maybe.withDefault []
 
 
 hofOperations :
