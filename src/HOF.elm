@@ -1,23 +1,13 @@
-module HOF exposing (HOF(..), fromString)
+module HOF exposing (filter, map, reduce)
 
 
-type HOF
-    = Map
-    | Filter
-    | Reduce
+map =
+    "map"
 
 
-fromString : String -> Maybe HOF
-fromString s =
-    case s of
-        "Map" ->
-            Just Map
+filter =
+    "filter"
 
-        "Filter" ->
-            Just Filter
 
-        "Reduce" ->
-            Just Reduce
-
-        _ ->
-            Nothing
+reduce =
+    "reduce"

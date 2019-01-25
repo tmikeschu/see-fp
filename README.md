@@ -16,11 +16,9 @@ learning to see list transformations as declarative instead of imperative.
 This application visualizes some of the fundamental higher order functions used
 to transform lists.
 
-### TODO:
-
-- [ ] `map`
-- [ ] `filter`
-- [ ] `reduce`
+- [x] `map`
+- [x] `filter`
+- [x] `reduce`
 
 The app is written in Elm and visualizes the operations using JavaScript syntax.
 
@@ -72,10 +70,7 @@ elm-app build
 
 Deploy to github pages:
 
-```
-elm-app build
-gh-pages -d build
-```
+Let Travis handle it!
 
 ## Stack
 
@@ -83,7 +78,7 @@ Languages: [Elm](https://elm-lang.org/)
 
 Libraries:
 
-DevOps:
+DevOps: [Github Pages](LINK TODO)
 
 Tools:
 

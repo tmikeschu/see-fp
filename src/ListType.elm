@@ -1,20 +1,110 @@
 module ListType exposing
-    ( ListType(..)
+    ( ListTypeData
     , cats
     , fromString
+    , listTypes
     , names
     , nums
-    , operationsFor
     , people
     )
 
+import Dict exposing (Dict)
+import HOF exposing (..)
 import SeeFpType exposing (SeeFpType(..))
 
 
-type ListType
-    = Nums
-    | Names
-    | Cats
+type alias ListTypeData =
+    ( String
+    , { list : List SeeFpType
+      , hofs : List ( String, List ( String, String ) )
+      }
+    )
+
+
+fromString : String -> Maybe ListTypeData
+fromString list =
+    listTypes
+        |> List.filter (Tuple.first >> (==) list)
+        |> List.head
+
+
+listTypes : List ListTypeData
+listTypes =
+    [ ( "nums"
+      , { list = nums
+        , hofs =
+            [ ( map
+              , [ ( "increment", "x => x + 1" )
+                , ( "inverse", "x => 1 / x" )
+                , ( "inverse", "x => 1 / x" )
+                , ( "square", "x => x * x" )
+                , ( "toWord", "x => custom(x)" )
+                ]
+              )
+            , ( filter
+              , [ ( "isEven", "x => x % 2 === 0" )
+                , ( "isOdd", "x => x % 2 !== 0" )
+                , ( "isPerfectSquare", "x => Math.sqrt(x) % 1 !== 0" )
+                ]
+              )
+            , ( reduce
+              , [ ( "sum", "(acc, x) => acc + x, 0" )
+                , ( "product", "(acc, x) => acc * x, 1" )
+                , ( "difference", "(acc, x) => acc - x, 0" )
+                ]
+              )
+            ]
+        }
+      )
+    , ( "names"
+      , { list = names
+        , hofs =
+            [ ( map
+              , [ ( "downcase", "s => s.toLowerCase()" )
+                , ( "upcase", "s => s.toUpperCase()" )
+                , ( "firstLetter", "s => s[0]" )
+                , ( "length", "s => s.length" )
+                ]
+              )
+            , ( filter
+              , [ ( "startsWithH", "s => s[0].toLowerCase() === 'h'" )
+                , ( "shorterThan4", "s => s.length < 4" )
+                , ( "containsR", "s => s.toLowerCase().includes('r')" )
+                ]
+              )
+            , ( reduce
+              , [ ( "greeting", "(acc, name) => `${acc} ${name},`, 'Hello'" )
+                , ( "portmanteau", "(acc, name) => `${acc}${name.substr(0, 3)}`" )
+                , ( "acronym", "(acc, name) => `${acc}.${name[0].toUpperCase()}`" )
+                ]
+              )
+            ]
+        }
+      )
+    , ( "cats"
+      , { list = cats
+        , hofs =
+            [ ( map
+              , [ ( "pourWater", "cat => pourWater(cat)" )
+                , ( "scare", "cat => scare(cat)" )
+                ]
+              )
+            , ( filter
+              , [ ( "isInLove", "cat => isInLove(cat)" )
+                , ( "isLaughing", "cat => isLaughing(cat)" )
+                , ( "isHappy", "cat => isHappy(cat)" )
+                , ( "toSmiley", "cat => toSmiley(cat)" )
+                ]
+              )
+            , ( reduce
+              , [ ( "group", "(acc, cat) => groupCat(cat)" )
+                , ( "realCat", "(acc, cat) => toCat(cat)" )
+                ]
+              )
+            ]
+        }
+      )
+    ]
 
 
 nums : List SeeFpType
@@ -47,74 +137,3 @@ people =
     , "😍"
     ]
         |> List.map StrVal
-
-
-fromString : String -> Maybe ListType
-fromString list =
-    case list of
-        "Nums" ->
-            Just Nums
-
-        "Names" ->
-            Just Names
-
-        "Cats" ->
-            Just Cats
-
-        _ ->
-            Nothing
-
-
-operationsFor :
-    ListType
-    ->
-        { map : List String
-        , filter : List String
-        , reduce : List String
-        }
-operationsFor lt =
-    case lt of
-        Nums ->
-            { map =
-                [ "increment"
-                , "inverse"
-                , "isEven"
-                , "square"
-                , "toWord"
-                ]
-            , filter =
-                [ "isEven"
-                , "isOdd"
-                , "isPerfectSquare"
-                ]
-            , reduce = []
-            }
-
-        Names ->
-            { map =
-                [ "downcase"
-                , "upcase"
-                , "firstLetter"
-                , "length"
-                ]
-            , filter =
-                [ "startsWithH"
-                , "shorterThan4"
-                , "containsR"
-                ]
-            , reduce = []
-            }
-
-        Cats ->
-            { map =
-                [ "toSmiley"
-                , "pourWater"
-                , "scare"
-                ]
-            , filter =
-                [ "isInLove"
-                , "isLaughing"
-                , "isHappy"
-                ]
-            , reduce = []
-            }

@@ -2,20 +2,20 @@ module Operation exposing
     ( Operation
     , filter
     , fromString
-    , operations
+    , map
     , pop
-    , push
+    , reduce
     )
 
-import Functions exposing (..)
-import SeeFpType exposing (SeeFpType(..))
+import Dict exposing (Dict)
+import SeeFpType exposing (SeeFpFunction(..), SeeFpType(..), functionFor)
 
 
 type alias Operation =
     { name : String
     , repository : List SeeFpType
     , signature : String
-    , fn : SeeFpType -> SeeFpType
+    , fn : SeeFpFunction
     }
 
 
@@ -23,85 +23,66 @@ type alias Update =
     Operation -> Operation
 
 
-operations :
-    List
-        ( String
-        , String
-        , SeeFpType
-          -> SeeFpType
-        )
-operations =
-    [ ( "increment", "x => x + 1", increment )
-    , ( "inverse", "x => 1 / x", inverse )
-    , ( "inverse", "x => 1 / x", inverse )
-    , ( "isEven", "x => x % 2 === 0", isEven )
-    , ( "isOdd", "x => x % 2 !== 0", isOdd )
-    , ( "isPerfectSquare", "x => Math.sqrt(x) % 1 !== 0", isPerfectSquare )
-    , ( "square", "x => x * x", square )
-    , ( "toWord", "x => custom(x)", toWord )
-    , ( "startsWithH", "s => s[0].toLowerCase() === 'h'", startsWithH )
-    , ( "shorterThan4", "s => s.length < 4", shorterThan4 )
-    , ( "containsR", "s => s.toLowerCase().includes('r')", containsR )
-    , ( "isInLove", "cat => isInLove(cat)", isInLove )
-    , ( "isLaughing", "cat => isLaughing(cat)", isLaughing )
-    , ( "isHappy", "cat => isHappy(cat)", isHappy )
-    , ( "downcase", "s => s.toLowerCase()", downcase )
-    , ( "upcase", "s => s.toUpperCase()", upcase )
-    , ( "firstLetter", "s => s[0]", firstLetter )
-    , ( "length", "s => s.length", length )
-    , ( "toSmiley", "cat => toSmiley(cat)", toSmiley )
-    , ( "pourWater", "cat => pourWater(cat)", pourWater )
-    , ( "scare", "cat => scare(cat)", scare )
-    ]
-
-
-fromString : String -> Maybe Operation
-fromString o =
+fromString : String -> List ( String, String ) -> Maybe Operation
+fromString o operations =
     operations
-        |> List.filter ((\( x, _, _ ) -> x) >> (==) o)
+        |> List.filter (Tuple.first >> (==) o)
         |> List.head
-        |> Maybe.map (\( a, b, c ) -> Operation a [] b c)
+        |> Maybe.map
+            (\( name, signature ) ->
+                Operation name [] signature (functionFor name)
+            )
 
 
-popList : List a -> List a
-popList =
-    Maybe.withDefault []
-        << Maybe.map List.reverse
-        << List.tail
-        << List.reverse
+pushRepo : a -> List a -> List a
+pushRepo el rep =
+    rep ++ [ el ]
+
+
+popRepo : List a -> List a
+popRepo =
+    List.reverse
+        >> List.tail
+        >> Maybe.withDefault []
+        >> List.reverse
 
 
 pop : Update
 pop op =
-    { op | repository = popList op.repository }
+    { op | repository = popRepo op.repository }
 
 
-pushList : a -> List a -> List a
-pushList x xs =
-    xs ++ [ x ]
-
-
-push : SeeFpType -> Update
-push x op =
+map : SeeFpType -> Update
+map x op =
     let
         val =
-            op.fn x
+            case op.fn of
+                Unary fn ->
+                    fn x
+
+                _ ->
+                    x
     in
-    { op | repository = pushList val op.repository }
+    { op | repository = pushRepo val op.repository }
 
 
 filter : SeeFpType -> Update
 filter x op =
     let
         val =
-            op.fn x
+            case op.fn of
+                Unary fn ->
+                    fn x
+
+                _ ->
+                    BoolVal <| False
     in
     case val of
         BoolVal b ->
             { op
                 | repository =
                     if b then
-                        pushList x op.repository
+                        pushRepo x op.repository
 
                     else
                         op.repository
@@ -109,3 +90,23 @@ filter x op =
 
         _ ->
             op
+
+
+reduce : SeeFpType -> Update
+reduce x op =
+    let
+        acc =
+            op.repository
+                |> List.reverse
+                |> List.head
+                |> Maybe.withDefault (StrVal "INIT")
+
+        val =
+            case op.fn of
+                Binary fn ->
+                    fn acc x
+
+                _ ->
+                    x
+    in
+    { op | repository = pushRepo val op.repository }
