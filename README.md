@@ -76,9 +76,7 @@ Let Travis handle it!
 
 Languages: [Elm](https://elm-lang.org/)
 
-Libraries:
-
-DevOps: [Github Pages](LINK TODO)
+DevOps: [Github Pages](https://pages.github.com/)
 
 Tools:
 

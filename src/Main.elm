@@ -15,7 +15,7 @@ import Html.Events
 import Json.Decode as Json
 import ListType exposing (ListTypeData)
 import Operation exposing (Operation)
-import SeeFpType exposing (SeeFpType(..))
+import SeeFpType exposing (SeeFpFunction(..), SeeFpType(..))
 
 
 
@@ -235,127 +235,7 @@ handleKeydown x =
 
 
 
----- VIEW ----
-
-
-view : Model -> Html Msg
-view model =
-    div [ class "SeeFP", onKeydown handleKeydown ]
-        [ h1 [ class (bem "header") ] [ text "See FP" ]
-        , div [ class (bem "stage") ]
-            [ div [ class (bem "operation") ]
-                [ text
-                    (case model.operation of
-                        Nothing ->
-                            "n/a"
-
-                        Just o ->
-                            o.name
-                    )
-                ]
-            , div [ class (bem "signature") ]
-                [ text
-                    (case model.operation of
-                        Nothing ->
-                            "n/a"
-
-                        Just o ->
-                            o.signature
-                    )
-                ]
-            , div [ class (bem "selectedList") ]
-                (model
-                    |> showList
-                    |> List.indexedMap Tuple.pair
-                    |> List.map
-                        (\( i, x ) ->
-                            div
-                                [ class
-                                    (bem "listElement "
-                                        ++ (case
-                                                ( i == model.index
-                                                , model.listTypeData /= Nothing
-                                                )
-                                            of
-                                                ( True, True ) ->
-                                                    "--current"
-
-                                                ( _, False ) ->
-                                                    "--na"
-
-                                                _ ->
-                                                    ""
-                                           )
-                                    )
-                                ]
-                                [ text x ]
-                        )
-                )
-            , div [ class (bem "transformedList") ]
-                (model
-                    |> showTranformedList
-                    |> List.map
-                        (\x ->
-                            div
-                                [ class
-                                    (bem "listElement "
-                                        ++ (case model.listTypeData /= Nothing of
-                                                False ->
-                                                    "--na"
-
-                                                _ ->
-                                                    ""
-                                           )
-                                    )
-                                ]
-                                [ text x ]
-                        )
-                )
-            , div [ class (bem "currentElement") ]
-                [ text <| getCurrentElement model ]
-            ]
-        , select [ onInput ChooseList ]
-            [ option
-                [ disabled True, selected True ]
-                [ text "Pick a list" ]
-            , makeOption "nums" "Nums" (model.listTypeData |> Maybe.map Tuple.first |> Maybe.withDefault "")
-            , makeOption "names" "Names" (model.listTypeData |> Maybe.map Tuple.first |> Maybe.withDefault "")
-            , makeOption "cats" "Cats" (model.listTypeData |> Maybe.map Tuple.first |> Maybe.withDefault "")
-            ]
-        , select [ onInput ChooseHOF, disabled (model.listTypeData == Nothing) ]
-            [ option
-                [ disabled True, selected (model.hof == "") ]
-                [ text "Pick a higher order function" ]
-            , makeOption "map" "map" model.hof
-            , makeOption "filter" "filter" model.hof
-            , makeOption "reduce" "reduce" model.hof
-            ]
-        , select
-            [ onInput ChooseOperation
-            , disabled
-                (List.isEmpty <|
-                    operationOptions model
-                )
-            ]
-            ([ option
-                [ disabled True, selected (model.operation == Nothing) ]
-                [ text "Pick an operation" ]
-             ]
-                ++ (model
-                        |> operationOptions
-                        |> List.map
-                            (\x ->
-                                makeOption x
-                                    x
-                                    (model.operation |> Maybe.map .name |> Maybe.withDefault "")
-                            )
-                   )
-            )
-        , div [ class <| bem <| "steps" ]
-            [ button [ class (bem "stepLeft"), onClick StepLeft ] [ text "⏪" ]
-            , button [ class (bem "stepRight"), onClick StepRight ] [ text "⏩" ]
-            ]
-        ]
+---- PRESENTERS ----
 
 
 operationOptions : Model -> List String
@@ -387,11 +267,19 @@ showList model =
 
 
 showTranformedList : Model -> List String
-showTranformedList model =
-    case model.operation of
-        Just o ->
-            o.repository
-                |> List.map SeeFpType.toString
+showTranformedList { operation } =
+    case operation of
+        Just { repository, fn } ->
+            case fn of
+                Binary _ ->
+                    repository
+                        |> List.reverse
+                        |> List.take 1
+                        |> List.map SeeFpType.toString
+
+                Unary _ ->
+                    repository
+                        |> List.map SeeFpType.toString
 
         Nothing ->
             [ "_" ]
@@ -410,3 +298,127 @@ getCurrentElement model =
 onKeydown : (Int -> msg) -> Attribute msg
 onKeydown message =
     on "keydown" (Json.map message keyCode)
+
+
+operationLabel : Maybe Operation -> String
+operationLabel =
+    Maybe.map .name >> Maybe.withDefault "n/a"
+
+
+signatureLabel : Maybe Operation -> String
+signatureLabel =
+    Maybe.map .signature >> Maybe.withDefault "n/a"
+
+
+makeListElement : Model -> ( Int, String ) -> Html msg
+makeListElement { index, listTypeData } ( i, x ) =
+    let
+        modifier =
+            case
+                ( i == index
+                , listTypeData /= Nothing
+                )
+            of
+                ( True, True ) ->
+                    "--current"
+
+                ( _, False ) ->
+                    "--na"
+
+                _ ->
+                    ""
+    in
+    div
+        [ class (bem "listElement " ++ modifier) ]
+        [ text x ]
+
+
+makeTransformedListElement : Model -> String -> Html msg
+makeTransformedListElement { listTypeData } x =
+    let
+        modifier =
+            if listTypeData == Nothing then
+                "--na"
+
+            else
+                ""
+    in
+    div
+        [ class (bem "listElement " ++ modifier) ]
+        [ text x ]
+
+
+
+---- VIEW ----
+
+
+view : Model -> Html Msg
+view model =
+    div [ class "SeeFP", onKeydown handleKeydown ]
+        [ h1 [ class (bem "header") ] [ text "See FP" ]
+        , div [ class (bem "stage") ]
+            [ select [ onInput ChooseList, class (bem "lists") ]
+                [ option
+                    [ disabled True, selected True ]
+                    [ text "Pick a list" ]
+                , makeOption "nums" "Nums" (model.listTypeData |> Maybe.map Tuple.first |> Maybe.withDefault "")
+                , makeOption "names" "Names" (model.listTypeData |> Maybe.map Tuple.first |> Maybe.withDefault "")
+                , makeOption "cats" "Cats" (model.listTypeData |> Maybe.map Tuple.first |> Maybe.withDefault "")
+                ]
+            , select
+                [ onInput ChooseHOF
+                , disabled
+                    (model.listTypeData
+                        == Nothing
+                    )
+                , class (bem "hofs")
+                ]
+                [ option
+                    [ disabled True, selected (model.hof == "") ]
+                    [ text "Pick a higher order function" ]
+                , makeOption "map" "map" model.hof
+                , makeOption "filter" "filter" model.hof
+                , makeOption "reduce" "reduce" model.hof
+                ]
+            , div [ class (bem "operation") ]
+                [ select
+                    [ onInput ChooseOperation
+                    , disabled
+                        (List.isEmpty <|
+                            operationOptions model
+                        )
+                    ]
+                    ([ option
+                        [ disabled True, selected (model.operation == Nothing) ]
+                        [ text "Pick an operation" ]
+                     ]
+                        ++ (model
+                                |> operationOptions
+                                |> List.map
+                                    (\x ->
+                                        makeOption x
+                                            x
+                                            (model.operation |> Maybe.map .name |> Maybe.withDefault "")
+                                    )
+                           )
+                    )
+                ]
+            , div [ class (bem "signature") ]
+                [ text <| signatureLabel model.operation ]
+            , div [ class (bem "selectedList") ]
+                (model
+                    |> showList
+                    |> List.indexedMap Tuple.pair
+                    |> List.map (makeListElement model)
+                )
+            , div [ class (bem "output") ]
+                (model
+                    |> showTranformedList
+                    |> List.map (makeTransformedListElement model)
+                )
+            ]
+        , div [ class <| bem <| "steps" ]
+            [ button [ class (bem "stepLeft"), onClick StepLeft ] [ text "⏪" ]
+            , button [ class (bem "stepRight"), onClick StepRight ] [ text "⏩" ]
+            ]
+        ]

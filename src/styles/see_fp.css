@@ -19,38 +19,31 @@
 
 .SeeFP__selectedList,
 .SeeFP__operation,
-.SeeFP__currentElement,
 .SeeFP__signature,
-.SeeFP__transformedList {
+.SeeFP__output {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-}
-
-.SeeFP__currentElement {
-  flex-direction: column;
-  align-items: flex-start;
 }
 
 .SeeFP__selectedList,
-.SeeFP__transformedList {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-areas: "label first second third fourth fifth sixth";
-  grid-template-rows: 1fr;
-  justify-items: end;
+.SeeFP__output {
+  display: flex;
 }
 
 .SeeFP__selectedList::before,
-.SeeFP__currentElement::before,
 .SeeFP__signature::before,
 .SeeFP__operation::before,
-.SeeFP__transformedList::before {
+.SeeFP__output::before {
   color: var(--color--secondary);
   margin-right: var(--space);
   font-size: var(--fsize--md);
   text-transform: uppercase;
+}
+
+.SeeFP__lists,
+.SeeFP__hofs {
+  width: max-content;
 }
 
 .SeeFP__selectedList::before {
@@ -65,12 +58,9 @@
   content: "Operation";
 }
 
-.SeeFP__currentElement::before {
-  content: "Current Element";
-}
-
-.SeeFP__transformedList::before {
-  content: "Transformed List";
+.SeeFP__output::before {
+  content: "Output";
+  justify-self: start;
 }
 
 .SeeFP__stepLeft {
@@ -86,6 +76,7 @@
   border-bottom: var(--border);
   border-width: 0px;
   transition: border-width 200ms ease;
+  margin-right: var(--space);
 }
 
 .SeeFP__listElement.--current {
