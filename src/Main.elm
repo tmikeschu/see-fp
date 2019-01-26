@@ -1,4 +1,12 @@
-module Main exposing (getCurrentElement, init, main, update)
+module Main exposing
+    ( Model
+    , elementAt
+    , getCurrentElement
+    , init
+    , main
+    , stepLeft
+    , update
+    )
 
 import Browser
 import Dict exposing (Dict)
@@ -218,8 +226,8 @@ update msg model =
 
 
 elementAt : Int -> List a -> Maybe a
-elementAt index =
-    List.drop index >> List.head
+elementAt =
+    (<<) List.head << List.drop
 
 
 handleKeydown x =
