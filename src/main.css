@@ -24,7 +24,7 @@ body {
 
 body {
   padding: var(--space);
-  background-color: var(--color--light);
+  background-color: var(--color--dark);
   color: var(--color--font);
   font-family: var(--font);
   display: flex;
