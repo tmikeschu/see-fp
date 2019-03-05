@@ -26,6 +26,10 @@
   align-items: center;
 }
 
+.SeeFP__output {
+  color: var(--color--success);
+}
+
 .SeeFP__selectedList,
 .SeeFP__output {
   display: flex;
@@ -73,14 +77,12 @@
 }
 
 .SeeFP__listElement {
-  border-bottom: var(--border);
-  border-width: 0px;
-  transition: border-width 200ms ease;
+  transition: color 300ms ease;
   margin-right: var(--space);
 }
 
 .SeeFP__listElement.--current {
-  border-width: var(--border-size);
+  color: var(--color--warning);
 }
 
 .SeeFP__listElement.--na {
