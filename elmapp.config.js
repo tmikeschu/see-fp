@@ -1,3 +1,3 @@
 module.exports = {
-  homepage: "https://tmikeschu.github.io/see-fp"
+  homepage: "https://mos.dev"
 };
